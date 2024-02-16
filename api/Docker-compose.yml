@@ -1,0 +1,20 @@
+version: '3.9'
+
+services:
+  ch_catalog:
+    container_name: ch_catalog
+    build: # this is the build context: .
+      dockerfile: Dockerfile
+      args: # these are the arguments that are passed to the dockerfile
+        DB_URL: jdbc:postgresql://172.19.0.2:5432/ch_postgres_db
+        PG_USER: ch_guest
+        PG_PASSWORD: postgres
+    ports: # port exposed to the host machine
+      - "8000:8000"
+    networks:
+      - ch_network
+
+networks:
+  ch_network:
+    external:
+      name: "ch_network"
