@@ -1,6 +1,7 @@
 package com.customheroes.catalog.extensions
 
 import com.customheroes.catalog.model.dto.FigureDto
+import com.customheroes.catalog.model.dto.FigurePreviewDto
 import com.customheroes.catalog.model.dto.FigureWithoutLinks
 import com.customheroes.catalog.model.postgres_model.Figure
 import com.customheroes.catalog.model.postgres_model.Filter
@@ -52,5 +53,15 @@ fun FigureWithoutLinks.toFigureDto(imageLinks: List<String>, modelLink: String):
             imageLinks,
             modelLink,
             this.tags
+    )
+}
+
+fun FigureDto.toFigurePreviewDto(): FigurePreviewDto {
+    return FigurePreviewDto(
+        this.id,
+        this.title,
+        this.price,
+        this.imageLinks,
+        this.tags
     )
 }
