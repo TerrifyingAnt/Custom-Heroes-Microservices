@@ -1,0 +1,95 @@
+version: '3.9'
+
+services:
+  ch_catalog:
+    container_name: ch_catalog
+    build: # this is the build context: .
+      dockerfile: /api/Dockerfile
+      args: # these are the arguments that are passed to the dockerfile
+        DB_URL: jdbc:postgresql://postgres:5432/ch_postgres_db
+        PG_USER: ch_guest
+        PG_PASSWORD: postgres
+    ports: # port exposed to the host machine
+      - "8000:8000"
+    depends_on:
+      - minio
+      - postgres
+      - keycloak
+      - krakend
+
+  minio:
+    container_name: ch_minio_storage
+    image: quay.io/minio/minio
+    command: server /data --console-address ":9090"
+    ports:
+      - "9000:9000"
+      - "9090:9090"
+    volumes:
+      - ./minio/data:/data
+    environment:
+      - MINIO_SERVER_URL=http://localhost:9000
+      - MINIO_PORT=9000
+      - MINIO_ROOT_USER=CHGuest
+      - MINIO_ROOT_PASSWORD=MinioMinio
+      - MINIO_BASE_STORAGE=ch-main-storage
+      - MINIO_PROXY_HOST=minio
+
+  krakend:
+    container_name: ch_krakend
+    image: devopsfaith/krakend:latest
+    command: run -d -c /etc/krakend/krakend.json
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./krakend:/etc/krakend
+
+  keycloak:
+    container_name: ch_keycloak
+    restart: always
+    environment:
+      - KEYCLOAK_ADMIN=CHKeycloak
+      - KEYCLOAK_ADMIN_PASSWORD=KeycloakKeycloak
+      - KC_DB=postgres
+      - KEYCLOAK_DB=ch_postgres_db
+      - KC_DB_URL=jdbc:postgresql://postgres:5432/ch_postgres_db
+      - KC_DB_USERNAME=ch_guest
+      - KC_DB_PASSWORD=postgres
+      - KEYCLOAK_IMPORT=/opt/jboss/keycloak/imports/realm-export.json 
+    build:
+      dockerfile: keycloak/Dockerfile
+    ports:
+      - "8081:8080"
+      - "8403:8403"
+    command: start-dev
+    depends_on:
+      - postgres
+      - krakend
+
+  postgres:
+    restart: always
+    container_name: ch_postgres_db
+    environment:
+      POSTGRES_USER: ch_guest
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ch_postgres_db
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./postgres/container_data:/var/lib/postgresql/data
+    build: 
+      dockerfile: postgres/Dockerfile
+
+  liquibase:
+    container_name: ch_liquibase
+    depends_on:
+      - postgres
+    environment:
+      LIQUIBASE_SEARCH_PATH: ./changelog
+    build:
+      dockerfile: liquibase/Dockerfile
+    command: liquibase --url="jdbc:postgresql://postgres:5432/ch_postgres_db" --changeLogFile=liquibase-changelog.xml --username=ch_guest --password=postgres update
+
+volumes:
+  postgres:
+    driver: local
+

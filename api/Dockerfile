@@ -5,12 +5,15 @@ FROM amazoncorretto:17-alpine-jdk
 WORKDIR /app
 
 # Copy all the files from the current directory to the image
-COPY . .
+COPY /api/ .
 
-# build the project avoiding tests
+# Grant execute permissions to the gradlew script
+RUN chmod +x ./gradlew
+
+# Run the Gradle wrapper to build the project
 RUN ./gradlew clean build -x test
-
-# Expose port 8080
+  
+# Expose port 8000
 EXPOSE 8000
 
 # Run the jar file

@@ -1,13 +1,17 @@
 package com.customheroes.catalog.controller
 
-import com.customheroes.catalog.extensions.toFigureDto
+import com.customheroes.catalog.utils.toFigureDto
+import com.customheroes.catalog.utils.toFigurePreviewDto
 import com.customheroes.catalog.model.dto.FigureDto
+import com.customheroes.catalog.model.dto.FigurePreviewDto
+import com.customheroes.catalog.model.dto.FigurePreviewWithoutLinksDto
 import com.customheroes.catalog.model.dto.FigureWithoutLinks
 import com.customheroes.catalog.model.postgres_model.Filter
 import com.customheroes.catalog.model.postgres_model.Tag
 import com.customheroes.catalog.repository.FigureRepository
 import com.customheroes.catalog.repository.FilterRepository
 import com.customheroes.catalog.repository.TagRepository
+import com.customheroes.catalog.utils.AppConstants
 import io.minio.GetPresignedObjectUrlArgs
 import io.minio.ListObjectsArgs
 import io.minio.MinioClient
@@ -16,6 +20,7 @@ import io.minio.http.Method
 import io.minio.messages.Item
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.data.domain.PageRequest
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestParam
@@ -45,15 +50,16 @@ class CatalogController {
 
 
     @GetMapping("/figures")
-    fun getFigures(@RequestParam(name="filters", required=false, defaultValue="all") filters: List<String>): List<FigureDto?> {
+    fun getFigures(@RequestParam(name="filters", required=false, defaultValue="all") filters: List<String>, @RequestParam(name="page", required=true, defaultValue="0") page: Int): List<FigurePreviewDto>? {
+        val pageable = PageRequest.of(page, AppConstants.NUMBER_OF_FIGURES_BY_PAGE)
         val nonNullFilterRepository = filterRepository ?: return listOf()
         val nonNullTagRepository = tagRepository ?: return listOf()
         var figuresWithoutLinks = mutableListOf<FigureWithoutLinks>()
-        val resultList = mutableListOf<FigureDto>()
+        val resultList = mutableListOf<FigurePreviewDto>()
         var figureList = mutableListOf<Filter?>()
         val figureIdList = mutableListOf<Int>()
         if(filters.contains("all")) {
-            figureList = nonNullFilterRepository.findAll().toMutableList()
+            figureList = nonNullFilterRepository.findAll(pageable)?.toMutableList() ?: mutableListOf()
         }
         else {
             val tagList = mutableListOf<Tag>()
@@ -63,12 +69,19 @@ class CatalogController {
                     tagList.add(foundTag)
                 }
             }
-            println(filters)
-            println(tagList)
+            val currentTempList = mutableListOf<FigurePreviewWithoutLinksDto>()
+
+            //println(filters)
+            //println(tagList)
 
             // TODO кринжово, потом переделать
-            tagList.forEach {tag ->
+            tagList.forEach { tag ->
                 val listOfId = nonNullFilterRepository.findAllByTag(tag)?.map { it?.figure?.id } ?: listOf()
+                val tempTagId = tag.id
+                if (tempTagId != null) {
+                    val tempList = nonNullFilterRepository.findAllFiguresByTagId(tempTagId)
+                    println(tempList)
+                }
                 listOfId.forEach {
                     if (it != null) {
                         figureIdList.add(it)
@@ -103,7 +116,7 @@ class CatalogController {
         }
         figuresWithoutLinks.forEach {
             println(it.sourcePath)
-            resultList.add(setLinksForImagesAndModel(it))
+            resultList.add(setLinksForImagesAndModel(it).toFigurePreviewDto())
         }
         return resultList
     }
@@ -149,13 +162,18 @@ class CatalogController {
     private fun getTempUrl(fileModel: Item, type: String): String {
         val nonNullMinioRepository = minioClient ?: return ""
         val reqParams: MutableMap<String, String> = HashMap()
-        reqParams["response-content-type"] = "application/$type"
+        if(type == "image") {
+            reqParams["response-content-type"] = "$type/jpeg"
+        }
+        else {
+            reqParams["response-content-type"] = "application/octet-stream"
+        }
         val url: String = nonNullMinioRepository.getPresignedObjectUrl(
                 GetPresignedObjectUrlArgs.builder()
                         .method(Method.GET)
                         .bucket(bucketName)
                         .`object`(fileModel.objectName())
-                        .expiry(2, TimeUnit.HOURS)
+                        .expiry(10, TimeUnit.MINUTES)
                         .extraQueryParams(reqParams)
                         .build())
         println(url)

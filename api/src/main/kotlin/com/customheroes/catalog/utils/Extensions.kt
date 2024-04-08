@@ -1,4 +1,4 @@
-package com.customheroes.catalog.extensions
+package com.customheroes.catalog.utils
 
 import com.customheroes.catalog.model.dto.FigureDto
 import com.customheroes.catalog.model.dto.FigurePreviewDto

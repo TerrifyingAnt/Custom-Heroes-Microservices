@@ -1,0 +1,31 @@
+{
+  "$schema": "https://www.krakend.io/schema/krakend.json",
+  "version": 3,
+  "timeout": "3s",
+  "name": "KrakenD - API Gateway",
+  "port": 8080,
+  "output_encoding": "json",
+    "endpoints":[
+    {
+      "endpoint": "/figures/",
+      "method": "GET",
+      "output_encoding": "no-op",
+      "extra_config": {
+          "auth/validator": {
+            "alg": "RS256",
+            "jwk_url": "http://host.docker.internal:8081/realms/ch_users/protocol/openid-connect/certs",
+            "disable_jwk_security": true,
+            "roles_key_is_nested": true,
+            "roles_key": "realm_access.roles"
+          }
+      },
+      "backend": [
+          {
+            "host": ["http://host.docker.internal:8000"],
+            "url_pattern": "/figures",
+            "method": "GET",
+            "encoding": "no-op"
+          }
+      ]
+    }]
+  }
