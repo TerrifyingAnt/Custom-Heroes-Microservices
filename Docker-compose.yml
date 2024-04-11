@@ -2,6 +2,7 @@ version: '3.9'
 
 services:
   ch_catalog:
+    restart: always
     container_name: ch_catalog
     build: # this is the build context: .
       dockerfile: /api/Dockerfile

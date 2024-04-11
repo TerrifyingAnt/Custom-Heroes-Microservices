@@ -69,19 +69,10 @@ class CatalogController {
                     tagList.add(foundTag)
                 }
             }
-            val currentTempList = mutableListOf<FigurePreviewWithoutLinksDto>()
-
-            //println(filters)
-            //println(tagList)
 
             // TODO кринжово, потом переделать
             tagList.forEach { tag ->
                 val listOfId = nonNullFilterRepository.findAllByTag(tag)?.map { it?.figure?.id } ?: listOf()
-                val tempTagId = tag.id
-                if (tempTagId != null) {
-                    val tempList = nonNullFilterRepository.findAllFiguresByTagId(tempTagId)
-                    println(tempList)
-                }
                 listOfId.forEach {
                     if (it != null) {
                         figureIdList.add(it)

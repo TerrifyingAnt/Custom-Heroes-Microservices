@@ -9,7 +9,7 @@ data class FigurePreviewWithoutLinksDto (
     val title: String,
     @Column(name = "price")
     val price: Float,
-    @Column(name = "sourcePath")
+    @Column(name = "source_path")
     val sourcePath: String,
     @Column(name = "tags")
     val tags: MutableList<Tag>
