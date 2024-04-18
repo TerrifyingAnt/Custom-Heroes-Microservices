@@ -1,4 +1,9 @@
 package com.customheroes.order.repository
 
-interface OrderItemRepository {
+import com.customheroes.order.model.OrderItem
+import org.springframework.data.repository.CrudRepository
+
+
+interface OrderItemRepository : CrudRepository<OrderItem?, Int?> {
+    fun findAllByOrderId(id: Int?): List<OrderItem?>?
 }

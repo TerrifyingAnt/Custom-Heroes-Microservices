@@ -1,4 +1,6 @@
 package com.customheroes.order.repository
 
-interface FigureRepository {
-}
+import com.customheroes.order.model.Figure
+import org.springframework.data.repository.CrudRepository
+
+interface FigureRepository : CrudRepository<Figure?, Int?>

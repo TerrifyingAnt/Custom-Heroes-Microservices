@@ -13,7 +13,7 @@ class Order {
     @Column(name = "order_id")
     var id: Int? = null
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name = "user_id")
     var user: User? = null
 

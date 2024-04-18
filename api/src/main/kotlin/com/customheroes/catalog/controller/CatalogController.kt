@@ -50,7 +50,7 @@ class CatalogController {
 
 
     @GetMapping("/figures")
-    fun getFigures(@RequestParam(name="filters", required=false, defaultValue="all") filters: List<String>, @RequestParam(name="page", required=true, defaultValue="0") page: Int): List<FigurePreviewDto>? {
+    fun getFigures(@RequestParam(name="filters", required=false, defaultValue="all") filters: List<String>, @RequestParam(name="figure_title", required=false, defaultValue="%") figureTitle: String, @RequestParam(name="page", required=true, defaultValue="0") page: Int): List<FigurePreviewDto>? {
         val pageable = PageRequest.of(page, AppConstants.NUMBER_OF_FIGURES_BY_PAGE)
         val nonNullFilterRepository = filterRepository ?: return listOf()
         val nonNullTagRepository = tagRepository ?: return listOf()
@@ -59,7 +59,7 @@ class CatalogController {
         var figureList = mutableListOf<Filter?>()
         val figureIdList = mutableListOf<Int>()
         if(filters.contains("all")) {
-            figureList = nonNullFilterRepository.findAll(pageable)?.toMutableList() ?: mutableListOf()
+            figureList = nonNullFilterRepository.findAllByFigureTitle(pageable, figureTitle)?.toMutableList() ?: mutableListOf()
         }
         else {
             val tagList = mutableListOf<Tag>()
@@ -72,7 +72,10 @@ class CatalogController {
 
             // TODO кринжово, потом переделать
             tagList.forEach { tag ->
-                val listOfId = nonNullFilterRepository.findAllByTag(tag)?.map { it?.figure?.id } ?: listOf()
+            val tagId = tag.id ?: return@forEach
+                val listOfId =
+                    nonNullFilterRepository.findAllByTagAndFigureTitle(pageable, tagId, figureTitle)?.map { it?.figure?.id }
+                        ?: listOf()
                 listOfId.forEach {
                     if (it != null) {
                         figureIdList.add(it)
