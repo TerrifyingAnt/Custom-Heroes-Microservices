@@ -1,24 +1,22 @@
 {
   "$schema": "https://www.krakend.io/schema/krakend.json",
   "version": 3,
-  "timeout": "3s",
+  "timeout": "15s",  
+  "cache_ttl": "300s",
   "name": "KrakenD - API Gateway",
-  "port": 8080,
+  "port": 8090,
+  "extra_config": {
+    "router": {
+       "return_error_msg": true
+    }
+  },
   "output_encoding": "json",
     "endpoints":[
     {
-      "endpoint": "/figures/",
+      "endpoint": "/figures",
+      "input_query_strings": ["filters", "figure_title", "page"],
       "method": "GET",
       "output_encoding": "no-op",
-      "extra_config": {
-          "auth/validator": {
-            "alg": "RS256",
-            "jwk_url": "http://host.docker.internal:8081/realms/ch_users/protocol/openid-connect/certs",
-            "disable_jwk_security": true,
-            "roles_key_is_nested": true,
-            "roles_key": "realm_access.roles"
-          }
-      },
       "backend": [
           {
             "host": ["http://host.docker.internal:8000"],
@@ -27,5 +25,96 @@
             "encoding": "no-op"
           }
       ]
-    }]
+    }, 
+    {
+      "endpoint": "/tags/",
+      "method": "GET",
+      "output_encoding": "no-op",
+      "backend": [
+          {
+            "host": ["http://host.docker.internal:8000"],
+            "url_pattern": "/tags",
+            "method": "GET",
+            "encoding": "no-op"
+          }
+      ]
+    },
+    {
+      "endpoint": "/figures/{id}",
+      "method": "GET",
+      "output_encoding": "no-op",
+      "backend": [
+          {
+            "host": ["http://host.docker.internal:8000"],
+            "url_pattern": "/figures/{id}",
+            "method": "GET",
+            "encoding": "no-op"
+          }
+      ]
+    },
+    {
+      "endpoint": "/figures_preview",
+      "input_query_strings": ["ids", "page"],
+      "method": "GET",
+      "output_encoding": "no-op",
+      "backend": [
+          {
+            "host": ["http://host.docker.internal:8000"],
+            "url_pattern": "/figures_preview",
+            "method": "GET",
+            "encoding": "no-op"
+          }
+      ]
+    },
+    {
+      "endpoint": "/login",
+      "method": "POST",
+      "output_encoding": "no-op",
+      "backend": [
+          {
+            "url_pattern": "/realms/users/protocol/openid-connect/token",
+            "method": "POST",
+            "host": ["http://keycloak:8081"],
+            "encoding": "no-op"
+          }
+      ]
+    },
+    { 
+      "endpoint": "/register",
+      "method": "POST",
+      "input_headers": ["Content-Type"],
+      "output_encoding": "no-op",
+      "backend": [
+          {
+            "host": ["http://host.docker.internal:8001"],
+            "url_pattern": "/register",
+            "method": "POST",
+            "encoding": "no-op"
+          }
+      ]
+    },
+    { 
+      "endpoint": "/me",
+      "method": "GET",
+      "output_encoding": "no-op",
+      "input_headers": ["*"],
+      "extra_config": {
+        "auth/validator": {
+            "alg": "RS256",
+            "jwk_url": "http://host.docker.internal:8081/realms/users/protocol/openid-connect/certs",
+            "disable_jwk_security": true,
+            "operation_debug": true
+        }
+    },
+      "backend": [
+          {
+            "input_headers": ["*"],
+            "host": ["http://keycloak:8080"],
+            "url_pattern": "/realms/users/protocol/openid-connect/userinfo",
+            "method": "GET",
+            "encoding": "no-op"
+          }
+      ]
+    }
+  ]
   }

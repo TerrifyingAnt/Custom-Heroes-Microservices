@@ -1,17 +1,15 @@
 package com.customheroes.catalog.controller
 
+import com.customheroes.catalog.model.dto.*
 import com.customheroes.catalog.utils.toFigureDto
 import com.customheroes.catalog.utils.toFigurePreviewDto
-import com.customheroes.catalog.model.dto.FigureDto
-import com.customheroes.catalog.model.dto.FigurePreviewDto
-import com.customheroes.catalog.model.dto.FigurePreviewWithoutLinksDto
-import com.customheroes.catalog.model.dto.FigureWithoutLinks
 import com.customheroes.catalog.model.postgres_model.Filter
 import com.customheroes.catalog.model.postgres_model.Tag
 import com.customheroes.catalog.repository.FigureRepository
 import com.customheroes.catalog.repository.FilterRepository
 import com.customheroes.catalog.repository.TagRepository
 import com.customheroes.catalog.utils.AppConstants
+import com.customheroes.catalog.utils.toFigurePreviewWithoutLinksDto
 import io.minio.GetPresignedObjectUrlArgs
 import io.minio.ListObjectsArgs
 import io.minio.MinioClient
@@ -135,6 +133,49 @@ class CatalogController {
             return setLinksForImagesAndModel(figureWithoutLinks)
         }
         return null
+    }
+
+    @GetMapping("/tags")
+    fun getAllTags(): List<TagDto>? {
+        val nonNullRepository = tagRepository?: return null
+        val listOfTags = nonNullRepository.findAll()
+        val outputTagDtoList = mutableListOf<TagDto>()
+        listOfTags.forEach {
+            val nonNullTagTitle = it ?: return@forEach
+            outputTagDtoList.add(TagDto(nonNullTagTitle.title ?: ""))
+        }
+        return outputTagDtoList
+    }
+
+    @GetMapping("/figures_preview")
+    fun getFiguresPreview(@RequestParam(name="ids", required = true) ids: List<Int>, @RequestParam(name="page", required=true, defaultValue="0") page: Int): List<FigurePreviewDto>? {
+        val nonNullFilterRepository = filterRepository ?: return listOf()
+        val listPreviewsNoLinks = mutableListOf<FigurePreviewWithoutLinksDto>()
+        val listPreviews = mutableListOf<FigurePreviewDto>()
+        ids.forEach {
+            val figureWithoutLinks = nonNullFilterRepository.findByFigureId(it)
+            if (!figureWithoutLinks.isNullOrEmpty()) {
+                val figurePreviewWithoutLink = figureWithoutLinks.toFigurePreviewWithoutLinksDto() ?: return@forEach
+                listPreviewsNoLinks.add(figurePreviewWithoutLink)
+            }
+        }
+        listPreviewsNoLinks.forEach {figurePreview ->
+            val objectLinks = getImagesLinks(figurePreview.sourcePath).toList()
+            val imageLinks = mutableListOf<String>()
+            objectLinks.forEach {
+                imageLinks.add(getTempUrl(it, "image"))
+            }
+            listPreviews.add(
+                FigurePreviewDto(
+                    id = figurePreview.id,
+                    title = figurePreview.title,
+                    price = figurePreview.price,
+                    imageLinks = imageLinks,
+                    tags = figurePreview.tags
+                )
+            )
+        }
+        return listPreviews
     }
 
     private fun setLinksForImagesAndModel(currentFigure: FigureWithoutLinks): FigureDto {

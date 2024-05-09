@@ -2,6 +2,7 @@ package com.customheroes.catalog.utils
 
 import com.customheroes.catalog.model.dto.FigureDto
 import com.customheroes.catalog.model.dto.FigurePreviewDto
+import com.customheroes.catalog.model.dto.FigurePreviewWithoutLinksDto
 import com.customheroes.catalog.model.dto.FigureWithoutLinks
 import com.customheroes.catalog.model.postgres_model.Figure
 import com.customheroes.catalog.model.postgres_model.Filter
@@ -63,5 +64,19 @@ fun FigureDto.toFigurePreviewDto(): FigurePreviewDto {
         this.price,
         this.imageLinks,
         this.tags
+    )
+}
+
+fun List<Filter?>.toFigurePreviewWithoutLinksDto(): FigurePreviewWithoutLinksDto? {
+    val figure = this[0]?.figure ?: return null
+    val tags = this.map { it?.tag ?: Tag(0, "лень делать адекватно")}
+    return FigurePreviewWithoutLinksDto(
+        id = figure.id ?: -1,
+        title = figure.title ?: "Крутая фигурка",
+        price = figure.price?.toFloat() ?: 1000f,
+        sourcePath = figure.sourcePath ?: "",
+        tags = tags.toMutableList()
+
+
     )
 }

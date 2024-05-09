@@ -4,6 +4,7 @@ import com.customheroes.order.model.Figure
 import com.customheroes.order.model.Order
 import com.customheroes.order.model.OrderItem
 import com.customheroes.order.model.User
+import com.customheroes.order.repository.FigureRepository
 import com.customheroes.order.repository.OrderItemRepository
 import com.customheroes.order.repository.OrderRepository
 import jakarta.servlet.http.HttpServletRequest

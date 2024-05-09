@@ -12,9 +12,6 @@ RUN chmod +x ./gradlew
 
 # Run the Gradle wrapper to build the project
 RUN ./gradlew clean build -x test
-  
-# Expose port 8000
-EXPOSE 8000
 
 # Run the jar file
 CMD ["java", "-jar", "./build/libs/crm-0.0.1-SNAPSHOT.jar"]
