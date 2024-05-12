@@ -2,12 +2,14 @@ package com.customheroes.auth.controller
 
 import com.customheroes.auth.model.dto.TokensDto
 import com.customheroes.auth.model.dto.TokensResponseDto
+import com.customheroes.auth.model.dto.UserInfoDto
 import com.customheroes.auth.model.dto.UserRequestDto
 import com.customheroes.auth.model.postgres.User
 import com.customheroes.auth.repository.UserRepository
 import com.customheroes.auth.util.Constants.CLIENT_ID
 import com.customheroes.auth.util.Constants.CLIENT_SECRET
 import com.customheroes.auth.util.Constants.KEYCLOAK_URL
+import com.customheroes.auth.util.toUserInfoDto
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
@@ -61,7 +63,7 @@ class AuthController {
         val users = nonNullUserRepository.findByLogin(user.login)
         if (users == null) {
             val hashedPassword = passwordEncoder.encode(user.password)
-            val postgresUser = User(0, user.login, hashedPassword, "CUSTOMER", "-1", user.fullName, "")
+            val postgresUser = User(0, user.login, hashedPassword, "customer", "-1", user.fullName, "")
             nonNullUserRepository.save(postgresUser)
             val addedUser = nonNullUserRepository.findByLogin(postgresUser.login ?: "")
         }

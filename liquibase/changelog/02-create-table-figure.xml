@@ -16,7 +16,7 @@
     <!--ТАБЛИЧКА С ФИГУРКАМИ-->
   <createTable tableName="figure_table">
       <column name="figure_id" type="int" autoIncrement="true">
-        <constraints nullable="false" unique="true" primaryKey="true"/>
+        <constraints nullable="false" primaryKey="true"/>
       </column>
 
       <column name="figure_price" type="real">

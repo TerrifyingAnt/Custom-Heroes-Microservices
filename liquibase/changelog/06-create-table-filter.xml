@@ -18,7 +18,7 @@
   <createTable tableName="filter_table">
 
     <column name="filter_id" type="int" autoIncrement="true">
-      <constraints nullable="false" unique="true" primaryKey="true"/>
+      <constraints nullable="false" primaryKey="true"/>
     </column>
 
     <column name="tag_id" type="int">
@@ -37,5 +37,5 @@
   <addForeignKeyConstraint baseTableName="filter_table" baseColumnNames="figure_id"
     constraintName="figure_id_fk2"
     referencedTableName="figure_table" referencedColumnNames="figure_id"/>
-    </changeSet>
+  </changeSet>
 </databaseChangeLog>

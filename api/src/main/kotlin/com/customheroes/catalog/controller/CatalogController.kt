@@ -110,7 +110,7 @@ class CatalogController {
             println(it.sourcePath)
             resultList.add(setLinksForImagesAndModel(it).toFigurePreviewDto())
         }
-        return resultList
+        return resultList.filter { it.id != 1 }
     }
 
     @GetMapping("/figures/{id}")

@@ -26,6 +26,32 @@ services:
       - keycloak
       - krakend
 
+  ch_profile:
+    restart: always
+    container_name: ch_profile
+    build:
+      dockerfile: /profile/Dockerfile
+    ports:
+      - '8002:8002'
+    depends_on:
+      - postgres
+      - minio
+      - keycloak
+      - krakend
+
+  ch_order:
+    restart: always
+    container_name: ch_order
+    build:
+      dockerfile: /order/Dockerfile
+    ports:
+      - '8003:8003'
+    depends_on:
+      - postgres
+      - minio
+      - keycloak
+      - krakend
+
   minio:
     container_name: ch_minio_storage
     image: quay.io/minio/minio
@@ -47,13 +73,14 @@ services:
     container_name: ch_krakend
     image: devopsfaith/krakend:latest
     command: run -d -c /etc/krakend/krakend.json
+    restart: always
     ports:
       - "8090:8090"
     volumes:
       - ./krakend:/etc/krakend
-    # networks:
-    #     custom_heroes_output:
-    #       ipv4_address: 10.147.17.181
+    networks:
+        custom_heroes_output:
+          ipv4_address: 10.147.17.181
 
   keycloak:
     container_name: ch_keycloak
@@ -78,6 +105,7 @@ services:
     depends_on:
       - postgres
       - krakend
+      - liquibase
 
   postgres:
     restart: always
@@ -95,6 +123,7 @@ services:
 
   liquibase:
     container_name: ch_liquibase
+    restart: on-failure
     depends_on:
       - postgres
     environment:

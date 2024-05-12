@@ -18,12 +18,12 @@
       "method": "GET",
       "output_encoding": "no-op",
       "backend": [
-          {
-            "host": ["http://host.docker.internal:8000"],
-            "url_pattern": "/figures",
-            "method": "GET",
-            "encoding": "no-op"
-          }
+        {
+          "host": ["http://host.docker.internal:8000"],
+          "url_pattern": "/figures",
+          "method": "GET",
+          "encoding": "no-op"
+        }
       ]
     }, 
     {
@@ -31,12 +31,12 @@
       "method": "GET",
       "output_encoding": "no-op",
       "backend": [
-          {
-            "host": ["http://host.docker.internal:8000"],
-            "url_pattern": "/tags",
-            "method": "GET",
-            "encoding": "no-op"
-          }
+        {
+          "host": ["http://host.docker.internal:8000"],
+          "url_pattern": "/tags",
+          "method": "GET",
+          "encoding": "no-op"
+        }
       ]
     },
     {
@@ -44,12 +44,12 @@
       "method": "GET",
       "output_encoding": "no-op",
       "backend": [
-          {
-            "host": ["http://host.docker.internal:8000"],
-            "url_pattern": "/figures/{id}",
-            "method": "GET",
-            "encoding": "no-op"
-          }
+        {
+          "host": ["http://host.docker.internal:8000"],
+          "url_pattern": "/figures/{id}",
+          "method": "GET",
+          "encoding": "no-op"
+        }
       ]
     },
     {
@@ -58,12 +58,12 @@
       "method": "GET",
       "output_encoding": "no-op",
       "backend": [
-          {
-            "host": ["http://host.docker.internal:8000"],
-            "url_pattern": "/figures_preview",
-            "method": "GET",
-            "encoding": "no-op"
-          }
+        {
+          "host": ["http://host.docker.internal:8000"],
+          "url_pattern": "/figures_preview",
+          "method": "GET",
+          "encoding": "no-op"
+        }
       ]
     },
     {
@@ -71,12 +71,12 @@
       "method": "POST",
       "output_encoding": "no-op",
       "backend": [
-          {
-            "url_pattern": "/realms/users/protocol/openid-connect/token",
-            "method": "POST",
-            "host": ["http://keycloak:8081"],
-            "encoding": "no-op"
-          }
+        {
+          "url_pattern": "/realms/users/protocol/openid-connect/token",
+          "method": "POST",
+          "host": ["http://host.docker.internal:8081"],
+          "encoding": "no-op"
+        }
       ]
     },
     { 
@@ -85,12 +85,12 @@
       "input_headers": ["Content-Type"],
       "output_encoding": "no-op",
       "backend": [
-          {
-            "host": ["http://host.docker.internal:8001"],
-            "url_pattern": "/register",
-            "method": "POST",
-            "encoding": "no-op"
-          }
+        {
+          "host": ["http://host.docker.internal:8001"],
+          "url_pattern": "/register",
+          "method": "POST",
+          "encoding": "no-op"
+        }
       ]
     },
     { 
@@ -103,18 +103,164 @@
             "alg": "RS256",
             "jwk_url": "http://host.docker.internal:8081/realms/users/protocol/openid-connect/certs",
             "disable_jwk_security": true,
-            "operation_debug": true
+            "operation_debug": true,
+            "roles_key": "realm_access.roles",
+            "roles": ["customer"],
+            "roles_key_is_nested": true,
+            "propagate_claims": [
+              ["sub", "x-user"]
+            ]
         }
     },
       "backend": [
-          {
-            "input_headers": ["*"],
-            "host": ["http://keycloak:8080"],
-            "url_pattern": "/realms/users/protocol/openid-connect/userinfo",
-            "method": "GET",
-            "encoding": "no-op"
-          }
+        {
+          "host": ["http://host.docker.internal:8002"],
+          "url_pattern": "/me",
+          "method": "GET",
+          "encoding": "no-op"
+        }
+      ]
+    },
+    { 
+      "endpoint": "/update_avatar",
+      "method": "POST",
+      "output_encoding": "no-op",
+      "input_headers": ["*"],
+      "input_query_strings": ["*"],
+      "extra_config": {
+        "auth/validator": {
+            "alg": "RS256",
+            "jwk_url": "http://host.docker.internal:8081/realms/users/protocol/openid-connect/certs",
+            "disable_jwk_security": true,
+            "operation_debug": true,
+            "roles_key": "realm_access.roles",
+            "roles": ["customer"],
+            "roles_key_is_nested": true,
+            "propagate_claims": [
+              ["sub", "x-user"]
+            ]
+        }
+    },
+      "backend": [
+        {
+          "host": ["http://host.docker.internal:8002"],
+          "url_pattern": "/update_avatar",
+          "method": "POST"
+        }
+      ]
+    },
+    { 
+      "endpoint": "/work_update_avatar",
+      "method": "GET",
+      "output_encoding": "no-op",
+      "input_headers": ["*"],
+      "input_query_strings": ["*"],
+      "extra_config": {
+        "auth/validator": {
+            "alg": "RS256",
+            "jwk_url": "http://host.docker.internal:8081/realms/users/protocol/openid-connect/certs",
+            "disable_jwk_security": true,
+            "operation_debug": true,
+            "roles_key": "realm_access.roles",
+            "roles": ["customer"],
+            "roles_key_is_nested": true,
+            "propagate_claims": [
+              ["sub", "x-user"]
+            ]
+        }
+    },
+      "backend": [
+        {
+          "host": ["http://host.docker.internal:8002"],
+          "url_pattern": "/work_update_avatar",
+          "method": "GET"
+        }
+      ]
+    },
+    { 
+      "endpoint": "/update_user",
+      "method": "POST",
+      "output_encoding": "no-op",
+      "input_headers": ["*"],
+      "input_query_strings": ["*"],
+      "extra_config": {
+        "auth/validator": {
+            "alg": "RS256",
+            "jwk_url": "http://host.docker.internal:8081/realms/users/protocol/openid-connect/certs",
+            "disable_jwk_security": true,
+            "operation_debug": true,
+            "roles_key": "realm_access.roles",
+            "roles": ["customer"],
+            "roles_key_is_nested": true,
+            "propagate_claims": [
+              ["sub", "x-user"]
+            ]
+        }
+    },
+      "backend": [
+        {
+          "host": ["http://host.docker.internal:8002"],
+          "url_pattern": "/update_user",
+          "method": "POST"
+        }
+      ]
+    },
+    { 
+      "endpoint": "/orders/create_order",
+      "method": "POST",
+      "output_encoding": "no-op",
+      "input_headers": ["*"],
+      "input_query_strings": ["*"],
+      "extra_config": {
+        "auth/validator": {
+            "alg": "RS256",
+            "jwk_url": "http://host.docker.internal:8081/realms/users/protocol/openid-connect/certs",
+            "disable_jwk_security": true,
+            "operation_debug": true,
+            "roles_key": "realm_access.roles",
+            "roles": ["customer"],
+            "roles_key_is_nested": true,
+            "propagate_claims": [
+              ["sub", "x-user"]
+            ]
+        }
+    },
+      "backend": [
+        {
+          "host": ["http://host.docker.internal:8003"],
+          "url_pattern": "/orders/create_order",
+          "method": "POST"
+        }
+      ]
+    },
+    { 
+      "endpoint": "/orders/get_orders",
+      "method": "GET",
+      "output_encoding": "no-op",
+      "input_headers": ["*"],
+      "input_query_strings": ["*"],
+      "extra_config": {
+        "auth/validator": {
+            "alg": "RS256",
+            "jwk_url": "http://host.docker.internal:8081/realms/users/protocol/openid-connect/certs",
+            "disable_jwk_security": true,
+            "operation_debug": true,
+            "roles_key": "realm_access.roles",
+            "roles": ["customer"],
+            "roles_key_is_nested": true,
+            "propagate_claims": [
+              ["sub", "x-user"]
+            ]
+        }
+    },
+      "backend": [
+        {
+          "host": ["http://host.docker.internal:8003"],
+          "url_pattern": "/orders/get_orders",
+          "method": "GET"
+        }
       ]
     }
+    
   ]
   }

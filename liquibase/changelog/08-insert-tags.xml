@@ -16,5 +16,8 @@
     <insert tableName="tag_table">
       <column name="tag_title" value="Персонажи"/>
     </insert>
+    <insert tableName="tag_table">
+      <column name="tag_title" value="Игры"/>
+    </insert>
   </changeSet>
 </databaseChangeLog>

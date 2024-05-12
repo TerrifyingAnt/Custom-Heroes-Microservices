@@ -21,7 +21,15 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
       <constraints nullable="false" unique="true" primaryKey="true"/>
     </column>
 
+    <column name="type" type="int">
+      <constraints nullable="false" />
+    </column>
+
     <column name="order_item_count" type="int" defaultValueNumeric="1">
+      <constraints nullable="false" />
+    </column>
+
+    <column name="order_item_price" type="real">
       <constraints nullable="false" />
     </column>
 
@@ -31,6 +39,38 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
 
     <column name="figure_id" type="int">
       <constraints nullable="false"/>
+    </column>
+
+    <column name="order_item_description" type="varchar(255)" defaultValue="">
+      <constraints nullable="false" />
+    </column>
+
+    <column name="order_item_references" type="varchar(255)" defaultValue="">
+      <constraints nullable="false" />
+    </column>
+
+    <column name="order_item_movable" type="boolean" defaultValueBoolean="false">
+      <constraints nullable="false" />
+    </column>
+
+    <column name="order_item_colored" type="boolean" defaultValueBoolean="false">
+      <constraints nullable="false" />
+    </column>
+
+    <column name="order_item_hair_link" type="varchar(255)" defaultValue="">
+      <constraints nullable="false" />
+    </column>
+
+    <column name="order_item_eye_link" type="varchar(255)" defaultValue="">
+      <constraints nullable="false" />
+    </column>
+
+    <column name="order_item_body_link" type="varchar(255)" defaultValue="">
+      <constraints nullable="false" />
+    </column>
+
+    <column name="order_item_title" type="varchar(255)" defaultValue="">
+      <constraints nullable="false" />
     </column>
 
   </createTable>
