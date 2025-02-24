@@ -2,7 +2,7 @@ services:
   - docker
 
 script:
-  - docker build .
+  - docker-compose up --build
 
 branches:
   only:
