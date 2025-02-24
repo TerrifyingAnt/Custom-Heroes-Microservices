@@ -12,3 +12,8 @@ script:
 
 after_success:
   - docker push $DOCKER_USERNAME/ch_back:latest
+
+
+branches:
+  only:
+    - master
