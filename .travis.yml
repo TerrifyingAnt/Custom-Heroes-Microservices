@@ -1,8 +1,11 @@
-language: generic
+env:
+  - DOCKER_COMPOSE_VERSION=v3.9
 
-services:
-  - docker
+services: docker
 
 branches:
   only:
     - main
+
+script: 
+  - docker-compose up --build
