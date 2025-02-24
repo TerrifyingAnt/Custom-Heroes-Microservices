@@ -66,12 +66,10 @@ class OrderController {
         val postgresUserId = userId.split(":").last().toInt()
         val orderList = nonNullOrderRepository.getAllUserOrders(postgresUserId) ?: return null
         val responseList = mutableListOf<OrderDto>()
-        orderList.forEach { order->
+        orderList.forEach { order ->
             val orderDetails = nonNullOrderItemRepository.findAllByOrderId(order.id) ?: listOf()
             responseList.add(OrderDto(order.toOrderInfoDto(), orderDetails.filterNotNull().map{ it.toOrderItemDto()}))
         }
         return responseList
     }
-
-
 }
