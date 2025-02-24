@@ -1,0 +1,14 @@
+language: generic
+
+services:
+  - docker
+
+before_install:
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+script:
+  - docker build -t $DOCKER_USERNAME/ch_back:latest .
+
+
+after_success:
+  - docker push $DOCKER_USERNAME/ch_back:latest
