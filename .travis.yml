@@ -1,12 +1,12 @@
 language: bash
-sudo: required
+# sudo: required
 
-services:
-  - docker
+# services:
+#   - docker
 
-branches:
-  only:
-    - main
+# branches:
+#   only:
+#     - main
 
-script:
-  - docker-compose up --build .
+# script:
+#   - docker-compose up --build .
