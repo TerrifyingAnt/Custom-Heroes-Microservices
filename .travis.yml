@@ -1,5 +1,4 @@
-env:
-  - DOCKER_COMPOSE_VERSION=v3.9
+language: java
 
 services: docker
 
