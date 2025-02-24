@@ -14,39 +14,6 @@
     </not>
   </preConditions>
     <!--ТАБЛИЧКА С ФИГУРКАМИ-->
-  <createTable tableName="figure_table">
-      <column name="figure_id" type="int" autoIncrement="true">
-        <constraints nullable="false" primaryKey="true"/>
-      </column>
-
-      <column name="figure_price" type="real">
-        <constraints nullable="false"/>
-      </column>
-
-      <column name="figure_name" type="varchar(255)">
-        <constraints nullable="false"/>
-      </column>
-
-      <column name="figure_description" type="varchar(500)">
-        <constraints nullable="false"/>
-      </column>
-
-      <column name="figure_making_time" type="varchar(250)">
-        <constraints nullable="true"/>
-      </column>
-
-
-      <column name="figure_rating" type="real">
-        <constraints nullable="false"/>
-      </column>
-
-      <column name="figure_is_movable" type="boolean">
-        <constraints nullable="false"/>
-      </column>
-
-      <column name="figure_source_path" type="varchar(255)">
-        <constraints nullable="true"/>
-      </column>
-  </createTable>
+  c
   </changeSet>
 </databaseChangeLog>
